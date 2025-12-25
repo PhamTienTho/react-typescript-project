@@ -1,8 +1,9 @@
 import { App, Button, Divider, Form, FormProps, Input } from "antd";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import './login.scss';
 import { Link, useNavigate } from "react-router-dom";
 import { loginAPI } from "@/services/api";
+import { useCurrentApp } from "@/components/context/app.context";
 
 interface FieldType {
     email: string;
@@ -14,6 +15,7 @@ const LoginPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const {message} = App.useApp();
+    const {setIsAuthenticated ,setUser} = useCurrentApp();
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         const {email, password} = values;
@@ -21,6 +23,8 @@ const LoginPage = () => {
         const res = await loginAPI(email, password);
         if(res.data) {
             localStorage.setItem("access_token", res.data.access_token);
+            setIsAuthenticated(true);
+            setUser(res.data.user);
             message.success("Đăng nhập thành công");
             navigate('/');
         }

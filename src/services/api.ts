@@ -10,4 +10,9 @@ const registerAPI = (fullName: string, email: string, password: string, phone: s
     return axios.post<IBackendRes<IRegister>>(urlBackend, {fullName, email, password, phone});
 }
 
-export {loginAPI, registerAPI}
+const fetchAccountAPI = () => {
+    const urlBackend = '/api/v1/auth/account';
+    return axios.get<IBackendRes<IFetchAccount>>(urlBackend);
+}
+
+export {loginAPI, registerAPI, fetchAccountAPI}
