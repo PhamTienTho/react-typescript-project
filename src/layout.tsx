@@ -1,11 +1,14 @@
+import { Outlet } from "react-router-dom";
+import AppHeader from "./components/layout/app.header";
 
-const App = () => {
+const Layout = () => {
 
   return (
-    <div>
-      
-    </div>
+    <>
+        <AppHeader/>
+
+        <Outlet/>
+    </>
   )
 }
-
-export default App
+export default Layout;
