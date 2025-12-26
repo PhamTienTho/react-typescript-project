@@ -35,7 +35,7 @@ const Layout = () => {
             loading={isAppLoading}
             size={"20px"}
             color="#5f8cef"
-            speedMultiplier={2}
+            speedMultiplier={1.5}
           />
         </div>
       }

@@ -10,6 +10,8 @@ import RegisterPage from 'pages/client/auth/register';
 import 'styles/global.scss'
 import { App } from 'antd';
 import { AppProvider } from './components/context/app.context';
+import ProtectedRoute from 'components/auth/privateAdmin';
+import AdminPage from './pages/admin/admin';
 
 
 const router = createBrowserRouter([
@@ -28,6 +30,19 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <AboutPage />,
+      },
+      {
+        path: "checkout",
+        element: (<ProtectedRoute>
+          <div>checkout page</div>
+        </ProtectedRoute>)
+      },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute>
+            <AdminPage />
+          </ProtectedRoute>)
       },
     ],
   },
