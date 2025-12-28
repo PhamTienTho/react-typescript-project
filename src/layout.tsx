@@ -7,19 +7,7 @@ import { SyncLoader } from "react-spinners";
 
 const Layout = () => {
 
-  const { setUser, setIsAuthenticated, isAppLoading, setIsAppLoading } = useCurrentApp();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const res = await fetchAccountAPI();
-      if (res.data) {
-        setUser(res.data.user);
-        setIsAuthenticated(true);
-      }
-      setIsAppLoading(false);
-    }
-    fetchUser();
-  }, []);
+  const { isAppLoading } = useCurrentApp();
 
   return (
     <>

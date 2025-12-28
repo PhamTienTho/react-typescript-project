@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react"
+import { fetchAccountAPI } from "@/services/api";
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface IAppContext {
     isAuthenticated: boolean;
@@ -17,17 +18,30 @@ export const AppProvider = (props: TProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     const [user, setUser] = useState<IUser | null>(null);
     const [isAppLoading, setIsAppLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const res = await fetchAccountAPI();
+            if (res.data) {
+                setUser(res.data.user);
+                setIsAuthenticated(true);
+            }
+            setIsAppLoading(false);
+        }
+        fetchUser();
+    }, []);
+
     return (
-       <CurrentUserContext.Provider value={{ isAuthenticated, user, isAppLoading, setIsAuthenticated, setUser, setIsAppLoading}}>
+        <CurrentUserContext.Provider value={{ isAuthenticated, user, isAppLoading, setIsAuthenticated, setUser, setIsAppLoading }}>
             {props.children}
-       </CurrentUserContext.Provider> 
+        </CurrentUserContext.Provider>
     )
 }
 
 export const useCurrentApp = () => {
     const currentAppContext = useContext(CurrentUserContext);
 
-    if(!currentAppContext) {
+    if (!currentAppContext) {
         throw new Error("useCurrentUser has to be used within <CurrentUserContext.Provider>");
     };
 
