@@ -19,8 +19,8 @@ const fetchAccountAPI = () => {
     });
 }
 
-const getUserAPI = () => {
-    const urlBackend = '/api/v1/user?current=1&pageSize=5';
+const getUserAPI = (query: string) => {
+    const urlBackend = `/api/v1/user?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
 }
 
