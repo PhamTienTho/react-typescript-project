@@ -29,4 +29,9 @@ const logoutAPI = () => {
     return axios.post<IBackendRes<IRegister>>(urlBackend);
 }
 
-export {loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI}
+const createUserAPI = (fullName: string, password: string, email: string, phone: string) => {
+    const urlBackend = '/api/v1/user';
+    return axios.post<IBackendRes<IUserTable>>(urlBackend, {fullName, password, email, phone});
+} 
+
+export {loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI}

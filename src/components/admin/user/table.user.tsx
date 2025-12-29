@@ -2,12 +2,9 @@ import { getUserAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Drawer, Pagination, Space, Tag } from 'antd';
+import { ProTable } from '@ant-design/pro-components';
+import { Button } from 'antd';
 import { useRef, useState } from 'react';
-
-
-
 
 type TSearch = {
     fullName: string;
@@ -19,11 +16,12 @@ type TSearch = {
 interface IProps {
     setOpenUserDetail: (v: boolean) => void;
     setUserDetail: (v: IUserTable) => void;
+    setOpenCreateUser: (v: boolean) => void;
+    actionRef: React.MutableRefObject<ActionType | undefined>
 }
 
 const TableUser = (props: IProps) => {
-    const { setOpenUserDetail, setUserDetail } = props;
-    const actionRef = useRef<ActionType>();
+    const { setOpenUserDetail, setUserDetail, setOpenCreateUser, actionRef } = props;
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
@@ -96,7 +94,7 @@ const TableUser = (props: IProps) => {
                 cardBordered
                 request={async (params, sort, filter) => {
                     let query = '';
-                    console.log(sort);
+                    console.log(sort, filter);
                     if (params) {
                         query += `current=${params.current}&pageSize=${params.pageSize}`;
                         if (params.email) {
@@ -111,13 +109,13 @@ const TableUser = (props: IProps) => {
                             query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`;
                         }
                     }
-                    if (sort) {
-                        if (sort.createdAt === 'ascend') {
-                            query += '&sort=createdAt'
-                        }
-                        if (sort.createdAt === 'descend')
-                            query += '&sort=-createdAt';
+
+                    query += `&sort=-createdAt`;
+
+                    if (sort && sort.createdAt) {
+                         query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
                     }
+                    
                     const res = await getUserAPI(query);
                     if (res.data) {
                         setMeta(res.data.meta);
@@ -147,13 +145,14 @@ const TableUser = (props: IProps) => {
                         key="button"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            actionRef.current?.reload();
+                            setOpenCreateUser(true);
                         }}
                         type="primary"
                     >
-                        Add new
+                        Add new user
                     </Button>
                 ]}
+                
             />
         </>
     );

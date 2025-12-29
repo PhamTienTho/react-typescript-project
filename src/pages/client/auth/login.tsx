@@ -43,7 +43,7 @@ const LoginPage = () => {
                             <Divider />
                         </div>
                         <Form
-                            name="Đăng ký tài khoản"
+                            name="Đăng nhập"
                             onFinish={onFinish}
                             form={form}
                             layout="vertical"
