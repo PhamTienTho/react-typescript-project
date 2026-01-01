@@ -4,7 +4,9 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button } from 'antd';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { IoCloudUploadOutline } from 'react-icons/io5';
+
 
 type TSearch = {
     fullName: string;
@@ -17,11 +19,12 @@ interface IProps {
     setOpenUserDetail: (v: boolean) => void;
     setUserDetail: (v: IUserTable) => void;
     setOpenCreateUser: (v: boolean) => void;
-    actionRef: React.MutableRefObject<ActionType | undefined>
+    actionRef: React.MutableRefObject<ActionType | undefined>;
+    setOpenImportUser:(v: boolean) => void;
 }
 
 const TableUser = (props: IProps) => {
-    const { setOpenUserDetail, setUserDetail, setOpenCreateUser, actionRef } = props;
+    const { setOpenUserDetail, setUserDetail, setOpenCreateUser, actionRef, setOpenImportUser } = props;
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
@@ -113,9 +116,9 @@ const TableUser = (props: IProps) => {
                     query += `&sort=-createdAt`;
 
                     if (sort && sort.createdAt) {
-                         query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
+                        query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
                     }
-                    
+
                     const res = await getUserAPI(query);
                     if (res.data) {
                         setMeta(res.data.meta);
@@ -141,18 +144,30 @@ const TableUser = (props: IProps) => {
                 dateFormatter="string"
                 headerTitle="Table user"
                 toolBarRender={() => [
-                    <Button
-                        key="button"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                            setOpenCreateUser(true);
-                        }}
-                        type="primary"
-                    >
-                        Add new user
-                    </Button>
+                    <>
+                        <Button
+                            key="button"
+                            icon={<IoCloudUploadOutline />}
+                            onClick={() => {
+                                setOpenImportUser(true);
+                            }}
+                            type="dashed"
+                        >
+                            Import
+                        </Button>
+                        <Button
+                            key="button"
+                            icon={<PlusOutlined />}
+                            onClick={() => {
+                                setOpenCreateUser(true);
+                            }}
+                            type="primary"
+                        >
+                            Add new user
+                        </Button>
+                    </>
                 ]}
-                
+
             />
         </>
     );
