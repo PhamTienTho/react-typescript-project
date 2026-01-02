@@ -56,7 +56,7 @@ declare global {
         phone: string;
         role: string;
         avatar: string;
-        isActive: true,
+        isActive: boolean,
         createdAt: string;
         updatedAt: string;
     }

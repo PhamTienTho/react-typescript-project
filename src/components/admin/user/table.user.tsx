@@ -5,7 +5,9 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { useState } from 'react';
+import { CSVLink } from 'react-csv';
 import { IoCloudUploadOutline } from 'react-icons/io5';
+import { TbFileExport } from 'react-icons/tb';
 
 
 type TSearch = {
@@ -20,7 +22,7 @@ interface IProps {
     setUserDetail: (v: IUserTable) => void;
     setOpenCreateUser: (v: boolean) => void;
     actionRef: React.MutableRefObject<ActionType | undefined>;
-    setOpenImportUser:(v: boolean) => void;
+    setOpenImportUser: (v: boolean) => void;
 }
 
 const TableUser = (props: IProps) => {
@@ -31,6 +33,7 @@ const TableUser = (props: IProps) => {
         pages: 0,
         total: 0
     });
+    const [dataExport, setDataExport] = useState<IUserTable[]>([]);
 
     const columns: ProColumns<IUserTable>[] = [
         {
@@ -97,7 +100,8 @@ const TableUser = (props: IProps) => {
                 cardBordered
                 request={async (params, sort, filter) => {
                     let query = '';
-                    console.log(sort, filter);
+                    // console.log(sort, filter);
+                    console.log("check >>>")
                     if (params) {
                         query += `current=${params.current}&pageSize=${params.pageSize}`;
                         if (params.email) {
@@ -122,6 +126,7 @@ const TableUser = (props: IProps) => {
                     const res = await getUserAPI(query);
                     if (res.data) {
                         setMeta(res.data.meta);
+                        setDataExport(res.data.result);
                     }
                     return {
                         data: res.data?.result,
@@ -129,7 +134,6 @@ const TableUser = (props: IProps) => {
                         success: true,
                         total: res.data?.meta.total
                     }
-
                 }}
                 rowKey="_id"
                 pagination={{
@@ -145,6 +149,13 @@ const TableUser = (props: IProps) => {
                 headerTitle="Table user"
                 toolBarRender={() => [
                     <>
+                        <Button
+                            key="button"
+                            icon={<TbFileExport />}
+                            type="dashed"
+                        >
+                            <CSVLink data={dataExport} filename='export-user.csv'>Export</CSVLink>
+                        </Button>
                         <Button
                             key="button"
                             icon={<IoCloudUploadOutline />}
