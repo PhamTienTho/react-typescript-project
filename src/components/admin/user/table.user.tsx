@@ -1,13 +1,15 @@
-import { getUserAPI } from '@/services/api';
+import { deleteUser, getUserAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { Button, message, notification, Popconfirm } from 'antd';
 import { useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { TbFileExport } from 'react-icons/tb';
+import UpdateUserTable from './update.user';
+import { PopconfirmProps } from 'antd/lib';
 
 
 type TSearch = {
@@ -23,10 +25,11 @@ interface IProps {
     setOpenCreateUser: (v: boolean) => void;
     actionRef: React.MutableRefObject<ActionType | undefined>;
     setOpenImportUser: (v: boolean) => void;
+    refreshTable: () => void;
 }
 
 const TableUser = (props: IProps) => {
-    const { setOpenUserDetail, setUserDetail, setOpenCreateUser, actionRef, setOpenImportUser } = props;
+    const { setOpenUserDetail, setUserDetail, setOpenCreateUser, actionRef, setOpenImportUser, refreshTable } = props;
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
@@ -34,6 +37,8 @@ const TableUser = (props: IProps) => {
         total: 0
     });
     const [dataExport, setDataExport] = useState<IUserTable[]>([]);
+    const [openUpdateUser, setOpenUpdateUser] = useState(false);
+    const [dataUpdate, setDataUpdate] = useState<IUserTable | null>(null);
 
     const columns: ProColumns<IUserTable>[] = [
         {
@@ -80,17 +85,47 @@ const TableUser = (props: IProps) => {
         },
         {
             title: 'Action',
-            render: () => {
+            render: (_, entity) => {
                 return (
                     <div style={{ display: 'flex', gap: '20px' }}>
-                        <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} />
-                        <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} />
+                        <EditOutlined style={{ color: 'orange', cursor: 'pointer' }}
+                            onClick={() => {
+                                setDataUpdate(entity);
+                                setOpenUpdateUser(true);
+                            }}
+                        />
+                        <>
+                            <Popconfirm
+                                title="Delete user"
+                                description="Are you sure to delete this user?"
+                                onConfirm={() => confirmDeleteUser(entity._id)}
+                                onCancel={() => {}}
+                                okText="Yes"
+                                cancelText="No"
+                                placement='left'
+                            >
+                                <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} />
+                            </Popconfirm>
+                        </>
                     </div>
                 )
             },
             hideInSearch: true
         }
     ];
+
+    const confirmDeleteUser = async (_id: string) => {
+        const res = await deleteUser(_id);
+        if(res.data) {
+            message.success("Xóa user thành công");
+            refreshTable();
+        }else {
+            notification.error({
+                message: "Xóa user thất bại",
+                description: res.message
+            })
+        }
+    };
 
     return (
         <>
@@ -100,8 +135,6 @@ const TableUser = (props: IProps) => {
                 cardBordered
                 request={async (params, sort, filter) => {
                     let query = '';
-                    // console.log(sort, filter);
-                    console.log("check >>>")
                     if (params) {
                         query += `current=${params.current}&pageSize=${params.pageSize}`;
                         if (params.email) {
@@ -179,6 +212,13 @@ const TableUser = (props: IProps) => {
                     </>
                 ]}
 
+            />
+            <UpdateUserTable
+                openUpdateUser={openUpdateUser}
+                setOpenUpdateUser={setOpenUpdateUser}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+                refreshTable={refreshTable}
             />
         </>
     );

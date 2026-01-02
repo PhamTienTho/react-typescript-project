@@ -23,6 +23,7 @@ const ManageUserPage = () => {
                 setOpenCreateUser={setOpenCreateUser}
                 actionRef={actionRef}
                 setOpenImportUser={setOpenImportUser}
+                refreshTable={refreshTable}
             />
             <UserDetail
                 openUserDetail={openUserDetail}
