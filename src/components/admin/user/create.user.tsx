@@ -7,7 +7,7 @@ import { ActionType } from "@ant-design/pro-components";
 interface IProps {
     openCreateUser: boolean;
     setOpenCreateUser: (v: boolean) => void;
-    actionRef: React.MutableRefObject<ActionType | undefined>
+    refreshTable: () => void
 }
 
 type FieldType = {
@@ -18,7 +18,7 @@ type FieldType = {
 }
 
 const CreateUserModal = (props: IProps) => {
-    const { openCreateUser, setOpenCreateUser, actionRef } = props;
+    const { openCreateUser, setOpenCreateUser, refreshTable } = props;
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [form] = Form.useForm();
     const { message } = App.useApp();
@@ -32,7 +32,7 @@ const CreateUserModal = (props: IProps) => {
         if (res.data) {
             message.success("Thêm user thành công");
             form.resetFields();
-            actionRef.current?.reload();
+            refreshTable();
             setOpenCreateUser(false);
         }
         else {

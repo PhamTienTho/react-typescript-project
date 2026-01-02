@@ -11,6 +11,10 @@ const ManageUserPage = () => {
     const [openCreateUser, setOpenCreateUser] = useState(false);
     const [openImportUser, setOpenImportUser] = useState(false);
     const actionRef = useRef<ActionType>();
+
+    const refreshTable = () => {
+        actionRef.current?.reload();
+    }
     return (
         <>
             <TableUser
@@ -29,11 +33,12 @@ const ManageUserPage = () => {
             <CreateUserModal
                 openCreateUser={openCreateUser}
                 setOpenCreateUser={setOpenCreateUser}
-                actionRef={actionRef}
+                refreshTable={refreshTable}
             />
             <ImportUserModal
                 openImportUser={openImportUser}
                 setOpenImportUser={setOpenImportUser}
+                refreshTable={refreshTable}
             />
         </>
     )

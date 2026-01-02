@@ -61,4 +61,9 @@ declare global {
         updatedAt: string;
     }
 
+    interface IResponseImport {
+        countSuccess: number;
+        countError: number;
+        detail: any;
+    }
 }

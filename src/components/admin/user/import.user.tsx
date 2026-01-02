@@ -1,19 +1,21 @@
 import { InboxOutlined } from "@ant-design/icons";
-import { Divider, message, Modal, Table, Upload, UploadProps } from "antd";
+import { Divider, message, Modal, notification, Table, Upload, UploadProps } from "antd";
 import { TableProps } from "antd/lib";
 import { useState } from "react";
 import Exceljs from 'exceljs';
-import { Buffer } from 'buffer';
+import { bulkCreateUserAPI } from "@/services/api";
+import templateFile from "assets/template/user.xlsx?url";
 
 interface IProps {
     openImportUser: boolean;
     setOpenImportUser: (v: boolean) => void;
+    refreshTable: () => void;
 }
 
 interface DataType {
-    name: string;
+    fullName: string;
     email: string;
-    phone: string
+    phone: string;
 }
 
 const columns: TableProps<DataType>['columns'] = [
@@ -34,9 +36,10 @@ const columns: TableProps<DataType>['columns'] = [
 
 
 const ImportUserModal = (props: IProps) => {
-    const { openImportUser, setOpenImportUser } = props;
+    const { openImportUser, setOpenImportUser, refreshTable } = props;
     const { Dragger } = Upload;
     const [dataImport, setDataImport] = useState<DataType[]>([]);
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
     const propsUpload: UploadProps = {
         name: 'file',
@@ -59,7 +62,6 @@ const ImportUserModal = (props: IProps) => {
 
                     // load file to buffer
                     const arrayBuffer = await file.arrayBuffer();
-                    const buffer = Buffer.from(arrayBuffer);
                     const workbook = new Exceljs.Workbook();
                     await workbook.xlsx.load(arrayBuffer);
 
@@ -76,10 +78,14 @@ const ImportUserModal = (props: IProps) => {
                             let obj: any = {};
                             for (let i = 1; i < keys.length; i++) {
                                 obj[keys[i]] = values[i];
+                                obj.id=i;
                             }
                             jsonData.push(obj);
                         })
                     });
+                    jsonData = jsonData.map((item, index) => {
+                        return {...item, id: index+1}
+                    })
                     setDataImport(jsonData);
                 }
             } else if (status === 'error') {
@@ -90,20 +96,40 @@ const ImportUserModal = (props: IProps) => {
             console.log('Dropped files', e.dataTransfer.files);
         },
     };
+
+    const handleImport = async () => {
+        setIsSubmit(true);
+        const dataSubmit = dataImport.map(item => ({
+            fullName: item.fullName,
+            email: item.email,
+            phone: item.phone,
+            password: import.meta.env.VITE_USER_CREATE_DEFAULT_PASSWORD
+        }))
+        const res = await bulkCreateUserAPI(dataSubmit);
+        if(res.data) {
+            notification.success({
+                message: "Bulk Create Users",
+                description: `Success: ${res.data.countSuccess}. Error: ${res.data.countError}`
+            })
+        }
+        setIsSubmit(false);
+        setOpenImportUser(false);
+        setDataImport([]);
+        refreshTable();
+    }
     return (
         <Modal
             title="Import data user"
             open={openImportUser}
-            onOk={() => {
-                // form.submit();
-            }}
+            onOk={() => handleImport()}
             // confirmLoading={confirmLoading}
             onCancel={() => {
                 setOpenImportUser(false);
                 setDataImport([]);
             }}
             okButtonProps={{
-                disabled: dataImport.length > 0 ? false : true
+                disabled: dataImport.length > 0 ? false : true,
+                loading: isSubmit
             }}
             width={700}
             destroyOnClose={true}
@@ -117,11 +143,14 @@ const ImportUserModal = (props: IProps) => {
                 <p className="ant-upload-hint">
                     Support for a single upload. Only accept .csv .xls .xlsx
                 </p>
+                <a href={templateFile} download onClick={e => e.stopPropagation()}>Download sample file</a>
             </Dragger>
             <Divider />
             <Table<DataType> 
                 dataSource={dataImport}
-                columns={columns} />
+                columns={columns} 
+                rowKey={"id"}
+                />
         </Modal>
     )
 }

@@ -117,7 +117,7 @@ const TableUser = (props: IProps) => {
 
                     if (sort && sort.createdAt) {
                         query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
-                    }
+                    } else query += `&sort=-createdAt`;
 
                     const res = await getUserAPI(query);
                     if (res.data) {
