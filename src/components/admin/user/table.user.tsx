@@ -9,7 +9,7 @@ import { CSVLink } from 'react-csv';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { TbFileExport } from 'react-icons/tb';
 import UpdateUserTable from './update.user';
-import { PopconfirmProps } from 'antd/lib';
+
 
 
 type TSearch = {
