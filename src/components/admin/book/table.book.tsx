@@ -6,64 +6,20 @@ import { useState } from "react";
 import { CSVLink } from "react-csv";
 import { TbFileExport } from "react-icons/tb";
 
-type DataType = {
-    _id: string;
-    mainText: string;
-    category: string;
-    author: string;
-    price: number;
-    updatedAt: string;
-}
-
 type TSearch = {
     mainText: string;
     author: string;
 }
 
-const columns: ProColumns<DataType>[] = [
-    {
-        dataIndex: '_id',
-        title: 'ID',
-        hideInSearch: true,
-    },
-    {
-        dataIndex: 'mainText',
-        title: 'Title',
-    },
-    {
-        dataIndex: 'category',
-        title: 'Category',
-        hideInSearch: true,
-    },
-    {
-        dataIndex: 'author',
-        title: 'Author',
-    },
-    {
-        dataIndex: 'price',
-        title: 'Price',
-        hideInSearch: true,
-        sorter: true,
-        render: (_, entity) => {
-            return (
-                entity.price.toLocaleString('it-IT', { style: 'decimal', currency: 'VND' })
-            )
-        }
-    },
-    {
-        dataIndex: 'updatedAt',
-        title: 'Updated at',
-        hideInSearch: true,
-        valueType: 'date'
-    },
-    {
-        title: 'Action',
-        hideInSearch: true,
-    },
-]
+interface IProps {
+    setOpenBookDetail: (v: boolean) => void;
+    bookDetail: IBookTable | null;
+    setBookDetail: (v: IBookTable | null) => void;
+}
 
-const BookTable = () => {
+const BookTable = (props: IProps) => {
 
+    const { setOpenBookDetail, bookDetail, setBookDetail } = props;
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
@@ -72,8 +28,62 @@ const BookTable = () => {
     })
     const [dataExport, setDataExport] = useState<IBookTable[]>([])
 
+    const columns: ProColumns<IBookTable>[] = [
+        {
+            dataIndex: '_id',
+            title: 'ID',
+            hideInSearch: true,
+            render: (_, entity) => {
+                return (
+                   <div>
+                     <a
+                        onClick={() => {
+                            setOpenBookDetail(true);
+                            setBookDetail(entity);
+                            console.log(bookDetail);
+                        }}
+                    >{entity._id}</a>
+                   </div>
+                )
+            }
+        },
+        {
+            dataIndex: 'mainText',
+            title: 'Title',
+        },
+        {
+            dataIndex: 'category',
+            title: 'Category',
+            hideInSearch: true,
+        },
+        {
+            dataIndex: 'author',
+            title: 'Author',
+        },
+        {
+            dataIndex: 'price',
+            title: 'Price',
+            hideInSearch: true,
+            sorter: true,
+            render: (_, entity) => {
+                return (
+                    entity.price.toLocaleString('it-IT', { style: 'decimal', currency: 'VND' })
+                )
+            }
+        },
+        {
+            dataIndex: 'updatedAt',
+            title: 'Updated at',
+            hideInSearch: true,
+            valueType: 'date'
+        },
+        {
+            title: 'Action',
+            hideInSearch: true,
+        },
+    ]
     return (
-        <ProTable<DataType, TSearch>
+        <ProTable<IBookTable, TSearch>
             columns={columns}
             // actionRef={actionRef}
             cardBordered

@@ -68,7 +68,7 @@ const UserDetail = (props: IProps) => {
     return (
         <>
             <Drawer
-                title="Basic Drawer"
+                title="User Detail"
                 closable={{ 'aria-label': 'Close Button' }}
                 onClose={() => {
                     setOpenUserDetail(false);
@@ -77,7 +77,7 @@ const UserDetail = (props: IProps) => {
                 open={openUserDetail}
                 size='large'
             >
-                <Descriptions title="User Info" bordered items={items} />
+                <Descriptions bordered items={items} />
             </Drawer>
         </>
     )
