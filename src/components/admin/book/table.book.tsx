@@ -1,6 +1,6 @@
 import { getBookAPI } from "@/services/api";
 import { PlusOutlined } from "@ant-design/icons";
-import { ProColumns, ProTable } from "@ant-design/pro-components";
+import { ActionType, ProColumns, ProTable } from "@ant-design/pro-components";
 import { Button } from "antd";
 import { useState } from "react";
 import { CSVLink } from "react-csv";
@@ -15,11 +15,13 @@ interface IProps {
     setOpenBookDetail: (v: boolean) => void;
     bookDetail: IBookTable | null;
     setBookDetail: (v: IBookTable | null) => void;
+    setOpenCreateBook: (v: boolean) => void;
+    actionRef: React.Ref<ActionType | undefined>;
 }
 
 const BookTable = (props: IProps) => {
 
-    const { setOpenBookDetail, bookDetail, setBookDetail } = props;
+    const { setOpenBookDetail, bookDetail, setBookDetail, setOpenCreateBook, actionRef } = props;
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
@@ -85,7 +87,7 @@ const BookTable = (props: IProps) => {
     return (
         <ProTable<IBookTable, TSearch>
             columns={columns}
-            // actionRef={actionRef}
+            actionRef={actionRef}
             cardBordered
             request={async (params, sort, filter) => {
                 let query = '';
@@ -103,7 +105,6 @@ const BookTable = (props: IProps) => {
                     query += `&sort=${sort.price === "ascend" ? "price" : "-price"}`;
                 }
 
-                console.log(query);
                 const res = await getBookAPI(query);
                 if (res.data) {
                     setMeta(res.data.meta);
@@ -140,6 +141,9 @@ const BookTable = (props: IProps) => {
                     key="button"
                     icon={<PlusOutlined />}
                     type="primary"
+                    onClick={() => {
+                        setOpenCreateBook(true);
+                    }}
                 >
                     Add new book
                 </Button>,

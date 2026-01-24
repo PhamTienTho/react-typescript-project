@@ -59,6 +59,38 @@ const getBookAPI = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackend);
 }
 
+const getCategoryAPI = () => {
+    const urlBackend = '/api/v1/database/category';
+    return axios.get<IBackendRes<string[]>>(urlBackend);
+}
+
+const uploadImageAPI = (fileImg: any, folder: string) => {
+    const urlBackend = '/api/v1/file/upload';
+    const bodyFormData = new FormData();
+    bodyFormData.append('fileImg', fileImg);
+     return axios.post<IBackendRes<{fileUploaded: string}>>(urlBackend, bodyFormData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+            "upload-type": folder
+        }
+     })
+}
+
+const createBookAPI = (mainText: string, author: string, category: string, price: number, quantity: number, thumbnail: string, slider: string[]) => {
+    const urlBackend = '/api/v1/book';
+    const data = {
+        mainText: mainText,
+        author: author,
+        category: category,
+        price: price,
+        quantity: quantity,
+        thumbnail: thumbnail,
+        slider:slider
+    }
+
+    return axios.post<IBackendRes<IRegister>>(urlBackend, data)
+}
 export {loginAPI, registerAPI, fetchAccountAPI, logoutAPI,
      getUserAPI, createUserAPI, bulkCreateUserAPI, updateUserAPI,
-    deleteUser, getBookAPI}
+    deleteUser, getBookAPI, getCategoryAPI, uploadImageAPI,
+    createBookAPI}
